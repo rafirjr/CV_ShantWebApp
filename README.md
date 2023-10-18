@@ -1,6 +1,6 @@
 # CV_ShantWebApp
 
-> 
+> Web application for Homenetmen CV Shant Scouts
 
 ## About
 

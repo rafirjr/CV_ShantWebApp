@@ -34,7 +34,6 @@ app.configure(rest())
 
 app.configure(postgresql)
 app.configure(authentication)
-app.configure(authentication)
 app.configure(services)
 
 // Configure a middleware for 404s and the error handler

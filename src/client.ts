@@ -34,6 +34,5 @@ export const createClient = <Configuration = any,>(
   client.set('connection', connection)
 
   client.configure(userClient)
-  client.configure(userClient)
   return client
 }

@@ -27,10 +27,3 @@ declare module '@feathersjs/feathers' {
     user?: User
   }
 }
-
-// Add the user as an optional property to all params
-declare module '@feathersjs/feathers' {
-  interface Params {
-    user?: User
-  }
-}
