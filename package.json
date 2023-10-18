@@ -11,7 +11,7 @@
   "contributors": [],
   "bugs": {},
   "engines": {
-    "node": ">= 20.5.1"
+    "node": ">= 16.20.2"
   },
   "feathers": {
     "language": "ts",

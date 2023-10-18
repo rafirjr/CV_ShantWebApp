@@ -11,7 +11,7 @@
   },
   "postgresql": {
     "client": "pg",
-    "connection": "postgres://postgres:@localhost:5432/CV_ShantWebApp"
+    "connection": "postgres://postgres:postgres@localhost:5432/CV_ShantWebApp"
   },
   "authentication": {
     "entity": "user",
