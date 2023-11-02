@@ -1,6 +1,7 @@
-// For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve, getValidator, querySyntax } from '@feathersjs/schema'
-import type { FromSchema } from '@feathersjs/schema'
+// // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
+import { resolve } from '@feathersjs/schema'
+import { Type, getValidator, querySyntax } from '@feathersjs/typebox'
+import type { Static } from '@feathersjs/typebox'
 import { passwordHash } from '@feathersjs/authentication-local'
 
 import type { HookContext } from '../../declarations'
@@ -8,18 +9,15 @@ import { dataValidator, queryValidator } from '../../validators'
 import type { UserService } from './users.class'
 
 // Main data model schema
-export const userSchema = {
-  $id: 'User',
-  type: 'object',
-  additionalProperties: false,
-  required: ['id', 'email'],
-  properties: {
-    id: { type: 'number' },
-    email: { type: 'string' },
-    password: { type: 'string' }
-  }
-} as const
-export type User = FromSchema<typeof userSchema>
+export const userSchema = Type.Object(
+  {
+    id: Type.Number(),
+    email: Type.String(),
+    password: Type.Optional(Type.String())
+  },
+  { $id: 'User', additionalProperties: false }
+)
+export type User = Static<typeof userSchema>
 export const userValidator = getValidator(userSchema, dataValidator)
 export const userResolver = resolve<User, HookContext<UserService>>({})
 
@@ -28,48 +26,37 @@ export const userExternalResolver = resolve<User, HookContext<UserService>>({
   password: async () => undefined
 })
 
-// Schema for creating new data
-export const userDataSchema = {
-  $id: 'UserData',
-  type: 'object',
-  additionalProperties: false,
-  required: ['email'],
-  properties: {
-    ...userSchema.properties
-  }
-} as const
-export type UserData = FromSchema<typeof userDataSchema>
+// Schema for creating new entries
+export const userDataSchema = Type.Pick(userSchema, ['email', 'password'], {
+  $id: 'UserData'
+})
+export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator)
-export const userDataResolver = resolve<UserData, HookContext<UserService>>({
+export const userDataResolver = resolve<User, HookContext<UserService>>({
   password: passwordHash({ strategy: 'local' })
 })
 
-// Schema for updating existing data
-export const userPatchSchema = {
-  $id: 'UserPatch',
-  type: 'object',
-  additionalProperties: false,
-  required: [],
-  properties: {
-    ...userSchema.properties
-  }
-} as const
-export type UserPatch = FromSchema<typeof userPatchSchema>
+// Schema for updating existing entries
+export const userPatchSchema = Type.Partial(userSchema, {
+  $id: 'UserPatch'
+})
+export type UserPatch = Static<typeof userPatchSchema>
 export const userPatchValidator = getValidator(userPatchSchema, dataValidator)
-export const userPatchResolver = resolve<UserPatch, HookContext<UserService>>({
+export const userPatchResolver = resolve<User, HookContext<UserService>>({
   password: passwordHash({ strategy: 'local' })
 })
 
 // Schema for allowed query properties
-export const userQuerySchema = {
-  $id: 'UserQuery',
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    ...querySyntax(userSchema.properties)
-  }
-} as const
-export type UserQuery = FromSchema<typeof userQuerySchema>
+export const userQueryProperties = Type.Pick(userSchema, ['id', 'email'])
+export const userQuerySchema = Type.Intersect(
+  [
+    querySyntax(userQueryProperties),
+    // Add additional query properties here
+    Type.Object({}, { additionalProperties: false })
+  ],
+  { additionalProperties: false }
+)
+export type UserQuery = Static<typeof userQuerySchema>
 export const userQueryValidator = getValidator(userQuerySchema, queryValidator)
 export const userQueryResolver = resolve<UserQuery, HookContext<UserService>>({
   // If there is a user (e.g. with authentication), they are only allowed to see their own data

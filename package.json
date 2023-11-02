@@ -1,6 +1,6 @@
 {
   "name": "CV_ShantWebApp",
-  "description": "Web application for Homenetmen CV Shant Scouts",
+  "description": "",
   "version": "0.0.0",
   "homepage": "",
   "private": true,
@@ -19,7 +19,8 @@
     "database": "postgresql",
     "framework": "express",
     "transports": [
-      "rest"
+      "rest",
+      "websockets"
     ],
     "schema": "typebox"
   },
@@ -56,6 +57,7 @@
     "@feathersjs/feathers": "^5.0.11",
     "@feathersjs/knex": "^5.0.11",
     "@feathersjs/schema": "^5.0.11",
+    "@feathersjs/socketio": "^5.0.11",
     "@feathersjs/transport-commons": "^5.0.11",
     "@feathersjs/typebox": "^5.0.11",
     "compression": "^1.7.4",

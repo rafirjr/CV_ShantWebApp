@@ -10,6 +10,7 @@ import express, {
   errorHandler
 } from '@feathersjs/express'
 import configuration from '@feathersjs/configuration'
+import socketio from '@feathersjs/socketio'
 
 import type { Application } from './declarations'
 import { configurationValidator } from './configuration'
@@ -18,6 +19,7 @@ import { logError } from './hooks/log-error'
 import { postgresql } from './postgresql'
 import { authentication } from './authentication'
 import { services } from './services/index'
+import { channels } from './channels'
 
 const app: Application = express(feathers())
 
@@ -31,10 +33,17 @@ app.use('/', serveStatic(app.get('public')))
 
 // Configure services and real-time functionality
 app.configure(rest())
-
+app.configure(
+  socketio({
+    cors: {
+      origin: app.get('origins')
+    }
+  })
+)
 app.configure(postgresql)
 app.configure(authentication)
 app.configure(services)
+app.configure(channels)
 
 // Configure a middleware for 404s and the error handler
 app.use(notFound())
