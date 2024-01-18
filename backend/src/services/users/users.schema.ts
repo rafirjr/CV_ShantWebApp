@@ -8,13 +8,23 @@ import type { HookContext } from '../../declarations'
 import { dataValidator, queryValidator } from '../../validators'
 import type { UserService } from './users.class'
 
+export enum USER_ROLES {
+  USER = 'USER',
+  ADMIN = 'ADMIN'
+}
+
 // Main data model schema
 export const userSchema = Type.Object(
   {
-    id: Type.Number(),
+    id: Type.Readonly(Type.String({ format: 'uuid' })),
     email: Type.String(),
     password: Type.Optional(Type.String()),
-    first_name: Type.Number()
+    first_name: Type.String(),
+    last_name: Type.String(),
+    phone_number: Type.String(),
+    role: Type.ReadonlyOptional(Type.Enum(USER_ROLES, { default: USER_ROLES.USER })),
+    is_verified: Type.Readonly(Type.Boolean({ default: false })),
+    created_at: Type.Readonly(Type.Date())
   },
   { $id: 'User', additionalProperties: false }
 )
@@ -28,9 +38,13 @@ export const userExternalResolver = resolve<User, HookContext<UserService>>({
 })
 
 // Schema for creating new entries
-export const userDataSchema = Type.Pick(userSchema, ['email', 'password'], {
-  $id: 'UserData'
-})
+export const userDataSchema = Type.Pick(
+  userSchema,
+  ['email', 'password', 'first_name', 'last_name', 'phone_number'],
+  {
+    $id: 'UserData'
+  }
+)
 export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator)
 export const userDataResolver = resolve<User, HookContext<UserService>>({
