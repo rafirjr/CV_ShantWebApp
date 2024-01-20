@@ -14,8 +14,10 @@ export async function up(knex: Knex): Promise<void> {
     table.string('first_name').notNullable()
     table.string('last_name').notNullable()
     table.string('phone_number')
-    table.enu('role', Object.keys(_USER_ROLES), { useNative: true, enumName: 'user_role' }).notNullable()
-    table.boolean('is_verified').notNullable()
+    table
+      .enu('role', Object.keys(_USER_ROLES), { useNative: true, enumName: 'user_role' })
+      .defaultTo(_USER_ROLES.USER)
+    table.boolean('is_verified').defaultTo(false).notNullable()
 
     table.timestamps(true, true)
   })
